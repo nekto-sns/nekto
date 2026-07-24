@@ -4,7 +4,6 @@ import (
 	"time"
 	"errors"
 	"context"
-	"log/slog"
 	"net/http"
 	"github.com/labstack/echo/v5"
 
@@ -34,12 +33,9 @@ func (h *userHandler) ByName(c *echo.Context) error {
 	user, err := h.svc.ByName(ctx, name)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return c.JSON(http.StatusNotFound,
-				      map[string]any{ "code": "NotFound", "msg": "User not found" })
+			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		}
-		slog.Error("Request processing failed", "err", err)
-		return c.JSON(http.StatusInternalServerError,
-			      map[string]any{ "code": "InternalServerError", "msg": "Error" })
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user").Wrap(err)
 	}
 	return c.JSON(http.StatusOK, user)
 }

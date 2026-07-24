@@ -26,9 +26,9 @@ func (u *userService) ByName(ctx context.Context, name string) (*model.User, err
 	user, err := u.repo.ByName(ctx, name)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return nil, fmt.Errorf("service: User not found: %w", err)
+			return nil, fmt.Errorf("User not found: %w", err)
 		}
-		return nil, fmt.Errorf("service: Failed to get user: %w", err)
+		return nil, fmt.Errorf("Failed to get user: %w", err)
 	}
 	return user, nil
 }

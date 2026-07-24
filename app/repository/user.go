@@ -28,9 +28,9 @@ func (r *userRepository) ByName(ctx context.Context, name string) (*model.User, 
 	err := r.db.QueryRow(ctx, query, name).Scan(&u.ID, &u.Name, &u.DisplayName, &u.Bio, &u.CreatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, fmt.Errorf("repository: Row not found: %w", model.ErrNotFound)
+			return nil, fmt.Errorf("User not found: %w", model.ErrNotFound)
 		}
-		return nil, fmt.Errorf("repository: DB query failed for username=%s : %w (%v)", name, model.ErrInternal, err)
+		return nil, fmt.Errorf("DB query failed (%v): %w", err, model.ErrInternal)
 	}
 
 	return &u, nil

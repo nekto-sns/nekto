@@ -14,13 +14,18 @@ import (
 
 	"github.com/nekto-sns/nekto-server/app/config"
 	"github.com/nekto-sns/nekto-server/app/shared/database"
-	"github.com/nekto-sns/nekto-server/app/shared/logger"
+	"github.com/nekto-sns/nekto-server/app/shared/errorhandler"
 )
 
 func main() {
 	cfg := config.Load()
 
-	logger.Setup(cfg.IsProd)
+	logOpts := &slog.HandlerOptions{
+		Level: slog.LevelDebug,
+		AddSource: false,
+	}
+	logger := slog.New(slog.NewTextHandler(os.Stdout, logOpts))
+	slog.SetDefault(logger)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
 	defer cancel()
@@ -43,7 +48,8 @@ func main() {
 	userHandler := handler.NewUserHandler(userSvc)
 
 	e := echo.New()
-	e.GET("/:name", userHandler.ByName)
+	e.HTTPErrorHandler = errorhandler.ErrorHandler
+	e.GET("/users/:name", userHandler.ByName)
 
 	e.Start(cfg.Port)
 }
