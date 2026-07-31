@@ -28,7 +28,9 @@ func (u *userService) ByName(ctx context.Context, name string) (*model.User, err
 		if errors.Is(err, model.ErrNotFound) {
 			return nil, fmt.Errorf("User not found: %w", err)
 		}
+
 		return nil, fmt.Errorf("Failed to get user: %w", err)
 	}
+
 	return user, nil
 }

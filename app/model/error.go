@@ -10,4 +10,5 @@ const (
 	ErrNotFound Error = "Resource not found"
 	ErrInternal       = "Internal server errror"
 	ErrBadRequest     = "Bad request"
+	ErrForbidden      = "Forbidden"
 )
