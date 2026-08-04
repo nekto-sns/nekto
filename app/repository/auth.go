@@ -21,15 +21,10 @@ func NewAuthRepository(pool *pgxpool.Pool) (*authRepository) {
 	}
 }
 
-func (r *authRepository) UsernameByScratchName(ctx context.Context, scratchName string) (string, error) {
-	var username string
+func (r *authRepository) UserIDByScratchName(ctx context.Context, scratchName string) (string, error) {
+	var userID string
 
-	err := r.db.QueryRow(ctx,
-			     `SELECT u.name FROM users u
-			     INNER JOIN scratch_auth sa ON u.id = sa.user_id
-			     WHERE sa.scratch_name = $1`,
-			scratchName,
-	).Scan(&username)
+	err := r.db.QueryRow(ctx,`SELECT user_id FROM scratch_auth WHERE id = $1`, scratchName).Scan(&userID)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -38,6 +33,6 @@ func (r *authRepository) UsernameByScratchName(ctx context.Context, scratchName 
 		return "", fmt.Errorf("DB query failed (%v): %w", err, model.ErrInternal)
 	}
 
-	return username, nil
+	return userID, nil
 }
 
