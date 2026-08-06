@@ -54,7 +54,7 @@ func (c *client) Verify(ctx context.Context, privateCode string) (string, bool, 
 	}
 
 	if auth.Valid == false {
-		return "", false, fmt.Errorf("Authentication failed: %w", model.ErrForbidden)
+		return "", false, fmt.Errorf("Invalid authentication: %w", model.ErrForbidden)
 	}
 
 	if auth.Redirect != c.redirectURL {

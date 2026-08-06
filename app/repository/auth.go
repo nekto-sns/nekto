@@ -24,7 +24,7 @@ func NewAuthRepository(pool *pgxpool.Pool) (*authRepository) {
 func (r *authRepository) UserIDByScratchName(ctx context.Context, scratchName string) (string, error) {
 	var userID string
 
-	err := r.db.QueryRow(ctx,`SELECT user_id FROM scratch_auth WHERE id = $1`, scratchName).Scan(&userID)
+	err := r.db.QueryRow(ctx,`SELECT user_id FROM scratch_auth WHERE scratch_name = $1`, scratchName).Scan(&userID)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
