@@ -11,9 +11,9 @@ import (
 )
 
 type client struct{
-	httpClient  *http.Client
-	apiURL      string
-	redirectURL string
+	httpClient     *http.Client
+	scratchAuthURL string
+	redirectURIs   []string
 }
 
 type scratchAuth struct{
@@ -22,16 +22,25 @@ type scratchAuth struct{
 	Redirect string `json:"redirect"`
 }
 
-func New(http *http.Client, scratchAuthURL string, redirectURL string) *client {
+func New(http *http.Client, scratchAuthURL string, redirectURIs []string) *client {
 	return &client{
 		httpClient: http,
-		apiURL: scratchAuthURL,
-		redirectURL: redirectURL,
+		scratchAuthURL: scratchAuthURL,
+		redirectURIs: redirectURIs,
 	}
 }
 
+func (c *client) isAllowedRedirectURL(url string) bool {
+	for _, v := range c.redirectURIs {
+		if v == url {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *client) Verify(ctx context.Context, privateCode string) (string, bool, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", c.apiURL + "/api/auth/verifyToken?privateCode=" + privateCode, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", c.scratchAuthURL + "/api/auth/verifyToken?privateCode=" + privateCode, nil)
 	if err != nil {
 		return "", false, fmt.Errorf("Failed to create HTTP request (%v): %w", err, model.ErrInternal)
 	}
@@ -57,7 +66,7 @@ func (c *client) Verify(ctx context.Context, privateCode string) (string, bool, 
 		return "", false, fmt.Errorf("Invalid authentication: %w", model.ErrForbidden)
 	}
 
-	if auth.Redirect != c.redirectURL {
+	if !c.isAllowedRedirectURL(auth.Redirect) {
 		return "", false, fmt.Errorf("Invalid redirect URL (%s): %w", auth.Redirect, model.ErrBadRequest)
 	}
 

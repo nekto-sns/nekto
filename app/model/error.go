@@ -7,8 +7,8 @@ func (e Error) Error() string {
 }
 
 const (
-	ErrNotFound Error = "Resource not found"
-	ErrInternal       = "Internal server errror"
-	ErrBadRequest     = "Bad request"
-	ErrForbidden      = "Forbidden"
+	ErrNotFound   Error = "Resource not found"
+	ErrInternal   Error = "Internal server errror"
+	ErrBadRequest Error = "Bad request"
+	ErrForbidden  Error = "Forbidden"
 )

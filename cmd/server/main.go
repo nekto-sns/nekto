@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"log/slog"
+	"net/http"
 	"time"
 	"context"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/nekto-sns/nekto-server/app/repository"
 	"github.com/nekto-sns/nekto-server/app/service"
 
+	"github.com/nekto-sns/nekto-server/app/client/scratchauth"
 
 	"github.com/nekto-sns/nekto-server/app/shared/config"
 	"github.com/nekto-sns/nekto-server/app/shared/database"
@@ -44,13 +46,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	userRepo := repository.NewUserRepository(dbPool)
-	userSvc  := service.NewUserService(userRepo)
+	userRepo    := repository.NewUserRepository(dbPool)
+	userSvc     := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userSvc)
+
+	scratchAuthURL   := "https://auth.itinerary.eu.org"
+	loginCallbackURL := "http://localhost:8080/auth/login/callback"
+
+	sa          := scratchauth.New(&http.Client{}, scratchAuthURL, []string{loginCallbackURL})
+	authRepo    := repository.NewAuthRepository(dbPool)
+	authSvc     := service.NewAuthService(authRepo, sa)
+	authHandler := handler.NewAuthHandler(authSvc, scratchAuthURL, loginCallbackURL)
 
 	e := echo.New()
 	e.HTTPErrorHandler = errorhandler.ErrorHandler
-	e.GET("/users/:name", userHandler.ByName)
+
+	user := e.Group("/users")
+	user.GET("/:name", userHandler.ByName)
+
+	auth := e.Group("/auth")
+	auth.GET("/login", authHandler.LoginRedirect)
+	auth.GET("/login/callback", authHandler.LoginCallback)
 
 	e.Start(cfg.Port)
 }
