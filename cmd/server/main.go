@@ -54,9 +54,9 @@ func main() {
 	loginCallbackURL := "http://localhost:8080/auth/login/callback"
 
 	sa          := scratchauth.New(&http.Client{}, scratchAuthURL, []string{loginCallbackURL})
-	authRepo    := repository.NewAuthRepository(dbPool)
-	authSvc     := service.NewAuthService(authRepo, sa)
-	authHandler := handler.NewAuthHandler(authSvc, scratchAuthURL, loginCallbackURL)
+	authRepo    := repository.NewScratchAuthRepository(dbPool)
+	authSvc     := service.NewScratchAuthService(authRepo, sa)
+	authHandler := handler.NewScratchAuthHandler(authSvc, scratchAuthURL, loginCallbackURL)
 
 	e := echo.New()
 	e.HTTPErrorHandler = errorhandler.ErrorHandler

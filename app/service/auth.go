@@ -8,7 +8,7 @@ import (
 	"github.com/nekto-sns/nekto-server/app/model"
 )
 
-type authRepository interface{
+type scratchAuthRepository interface{
 	UserIDByScratchName(ctx context.Context, scratchName string) (string, error)
 }
 
@@ -16,19 +16,19 @@ type scratchAuthClient interface{
 	Verify(ctx context.Context, privateCode string) (string, bool, error)
 }
 
-type authService struct{
-	repository authRepository
+type scratchAuthService struct{
+	repository scratchAuthRepository
 	scratchAuth scratchAuthClient
 }
 
-func NewAuthService(repo authRepository, saClient scratchAuthClient) (*authService) {
-	return &authService{
+func NewScratchAuthService(repo scratchAuthRepository, saClient scratchAuthClient) (*scratchAuthService) {
+	return &scratchAuthService{
 		repository: repo,
 		scratchAuth: saClient,
 	}
 }
 
-func (s *authService) LoginCallback(ctx context.Context, privateCode string) (string, bool, error) {
+func (s *scratchAuthService) LoginCallback(ctx context.Context, privateCode string) (string, bool, error) {
 	scratchName, isValid, err := s.scratchAuth.Verify(ctx, privateCode)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {

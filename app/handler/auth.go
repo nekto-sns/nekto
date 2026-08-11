@@ -12,30 +12,30 @@ import (
 	"github.com/nekto-sns/nekto-server/app/model"
 )
 
-type authService interface{
+type scratchAuthService interface{
 	LoginCallback(context.Context, string) (string, bool, error)
 }
 
-type authHandler struct{
-	svc authService
+type scratchAuthHandler struct{
+	svc scratchAuthService
 	loginRedirectURL string
 }
 
-func NewAuthHandler(svc authService, scratchAuthURL, loginCallbackURL string) (*authHandler) {
+func NewScratchAuthHandler(svc scratchAuthService, scratchAuthURL, loginCallbackURL string) (*scratchAuthHandler) {
 	base64URL := base64.URLEncoding.EncodeToString([]byte(loginCallbackURL))
 	redirect, _ := url.JoinPath(scratchAuthURL, "/auth")
 
-	return &authHandler{
+	return &scratchAuthHandler{
 		svc: svc,
 		loginRedirectURL: redirect + "?redirect=" + base64URL,
 	}
 }
 
-func (h *authHandler) LoginRedirect(c *echo.Context) error {
+func (h *scratchAuthHandler) LoginRedirect(c *echo.Context) error {
 	return c.Redirect(303, h.loginRedirectURL)
 }
 
-func (h *authHandler) LoginCallback(c *echo.Context) error {
+func (h *scratchAuthHandler) LoginCallback(c *echo.Context) error {
 	privateCode := c.QueryParam("privateCode")
 	if privateCode == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "privateCode not found")

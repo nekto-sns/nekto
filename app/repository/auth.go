@@ -11,17 +11,17 @@ import (
 	"github.com/nekto-sns/nekto-server/app/model"
 )
 
-type authRepository struct{
+type scratchAuthRepository struct{
 	db *pgxpool.Pool
 }
 
-func NewAuthRepository(pool *pgxpool.Pool) (*authRepository) {
-	return &authRepository{
+func NewScratchAuthRepository(pool *pgxpool.Pool) (*scratchAuthRepository) {
+	return &scratchAuthRepository{
 		db: pool,
 	}
 }
 
-func (r *authRepository) UserIDByScratchName(ctx context.Context, scratchName string) (string, error) {
+func (r *scratchAuthRepository) UserIDByScratchName(ctx context.Context, scratchName string) (string, error) {
 	var userID string
 
 	err := r.db.QueryRow(ctx,`SELECT user_id FROM scratch_auth WHERE scratch_name = $1`, scratchName).Scan(&userID)
