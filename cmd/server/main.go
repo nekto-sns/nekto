@@ -27,7 +27,7 @@ func main() {
 		Level: slog.LevelDebug,
 		AddSource: false,
 	}
-	logger := slog.New(slog.NewTextHandler(os.Stdout, logOpts))
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, logOpts))
 	slog.SetDefault(logger)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
