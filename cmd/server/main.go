@@ -46,17 +46,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	userRepo    := repository.NewUserRepository(dbPool)
-	userSvc     := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userSvc)
+	userRepo    := repository.NewUser(dbPool)
+	userSvc     := service.NewUser(userRepo)
+	userHandler := handler.NewUser(userSvc)
 
 	scratchAuthURL   := "https://auth.itinerary.eu.org"
 	loginCallbackURL := "http://localhost:8080/auth/login/callback"
 
 	sa          := scratchauth.New(&http.Client{}, scratchAuthURL, []string{loginCallbackURL})
-	authRepo    := repository.NewScratchAuthRepository(dbPool)
-	authSvc     := service.NewScratchAuthService(authRepo, sa)
-	authHandler := handler.NewScratchAuthHandler(authSvc, scratchAuthURL, loginCallbackURL)
+	authRepo    := repository.NewScratchAuth(dbPool)
+	authSvc     := service.NewScratchAuth(authRepo, sa)
+	authHandler := handler.NewScratchAuth(authSvc, scratchAuthURL, loginCallbackURL)
 
 	e := echo.New()
 	e.HTTPErrorHandler = errorhandler.ErrorHandler

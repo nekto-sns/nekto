@@ -15,7 +15,7 @@ type scratchAuthRepository struct{
 	db *pgxpool.Pool
 }
 
-func NewScratchAuthRepository(pool *pgxpool.Pool) (*scratchAuthRepository) {
+func NewScratchAuth(pool *pgxpool.Pool) (*scratchAuthRepository) {
 	return &scratchAuthRepository{
 		db: pool,
 	}

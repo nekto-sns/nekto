@@ -21,7 +21,7 @@ type scratchAuthHandler struct{
 	loginRedirectURL string
 }
 
-func NewScratchAuthHandler(svc scratchAuthService, scratchAuthURL, loginCallbackURL string) (*scratchAuthHandler) {
+func NewScratchAuth(svc scratchAuthService, scratchAuthURL, loginCallbackURL string) (*scratchAuthHandler) {
 	base64URL := base64.URLEncoding.EncodeToString([]byte(loginCallbackURL))
 	redirect, _ := url.JoinPath(scratchAuthURL, "/auth")
 

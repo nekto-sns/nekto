@@ -21,7 +21,7 @@ type scratchAuthService struct{
 	scratchAuth scratchAuthClient
 }
 
-func NewScratchAuthService(repo scratchAuthRepository, saClient scratchAuthClient) (*scratchAuthService) {
+func NewScratchAuth(repo scratchAuthRepository, saClient scratchAuthClient) (*scratchAuthService) {
 	return &scratchAuthService{
 		repository: repo,
 		scratchAuth: saClient,
