@@ -10,9 +10,12 @@ import (
 )
 
 type Config struct{
-	Port   string `env:"PORT" envDefault:"8080"`
-	DBUrl  string `env:"DB_URL,required,notEmpty"`
-	IsProd bool   `env:"IS_PROD" envDefault:false`
+	Port             string `env:"PORT" envDefault:"8080"`
+	DBUrl            string `env:"DB_URL,required,notEmpty"`
+	IsProd           bool   `env:"IS_PROD" envDefault:false`
+	ScratchAuthURL   string `env:"SCRATCH_AUTH_URL,required,notEmpty"`
+	BaseURL          string `env:"BASE_URL"`
+	LoginCallbackURL string
 }
 
 func Load() (*Config) {
@@ -33,6 +36,12 @@ func Load() (*Config) {
 	if cfg.Port != "" && cfg.Port[0] != ':' {
 		cfg.Port = ":" + cfg.Port
 	}
+
+	if cfg.BaseURL == "" {
+		cfg.BaseURL = "http://localhost" + cfg.Port
+	}
+
+	cfg.LoginCallbackURL = cfg.BaseURL + "/auth/login/callback"
 
 	return &cfg
 }
