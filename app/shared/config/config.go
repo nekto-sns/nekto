@@ -41,7 +41,7 @@ func Load() (*Config) {
 		cfg.BaseURL = "http://localhost" + cfg.Port
 	}
 
-	cfg.LoginCallbackURL = cfg.BaseURL + "/auth/login/callback"
+	cfg.LoginCallbackURL = cfg.BaseURL + "/auth/scratch/login/callback"
 
 	return &cfg
 }
