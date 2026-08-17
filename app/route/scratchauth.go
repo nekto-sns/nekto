@@ -10,7 +10,7 @@ type scratchAuthHandler interface{
 }
 
 func saRoute(e *echo.Echo, sh scratchAuthHandler) {
-	e.Group("/auth/scratch")
-	e.GET("/login", sh.LoginRedirect)
-	e.GET("/login/callback", sh.LoginCallback)
+	s := e.Group("/auth/scratch")
+	s.GET("/login", sh.LoginRedirect)
+	s.GET("/login/callback", sh.LoginCallback)
 }

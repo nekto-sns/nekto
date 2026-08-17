@@ -53,7 +53,7 @@ func (h *scratchAuthHandler) LoginCallback(c *echo.Context) error {
 	}
 
 	if !isValid {
-		return echo.NewHTTPError(http.StatusForbidden, "Unauthorized")
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 	}
 
 	return c.String(http.StatusOK, userID + " authorized")
