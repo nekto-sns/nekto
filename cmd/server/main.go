@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 
+	"github.com/nekto-sns/nekto-server/app/route"
 	"github.com/nekto-sns/nekto-server/app/handler"
 	"github.com/nekto-sns/nekto-server/app/repository"
 	"github.com/nekto-sns/nekto-server/app/service"
@@ -59,12 +59,8 @@ func main() {
 	e := echo.New()
 	e.HTTPErrorHandler = errorhandler.ErrorHandler
 
-	user := e.Group("/users")
-	user.GET("/:name", userHandler.ByName)
+	route.Setup(e, userHandler, authHandler)
 
-	auth := e.Group("/auth")
-	auth.GET("/login", authHandler.LoginRedirect)
-	auth.GET("/login/callback", authHandler.LoginCallback)
 
 	e.Start(cfg.Port)
 }
