@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"encoding/json"
 
-	"github.com/nekto-sns/nekto-server/app/model"
+	"github.com/nekto-sns/nekto/server/app/model"
 )
 
 type client struct{

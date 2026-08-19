@@ -7,7 +7,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"github.com/nekto-sns/nekto-server/app/model"
+	"github.com/nekto-sns/nekto/server/app/model"
 )
 
 type sessionRepository interface{

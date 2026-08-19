@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 
-	"github.com/nekto-sns/nekto-server/app/model"
+	"github.com/nekto-sns/nekto/server/app/model"
 )
 
 type scratchAuthService interface{
