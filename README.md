@@ -1,8 +1,6 @@
-# nekto-server
+# nekto
 
 本プロジェクトはAGPLv3のもとで公開されています。詳細は [LICENSE.md](https://github.com/nekto-sns/nekto-server/blob/main/LICENSE.md) をご覧ください。
-
-SNSのAPIサーバー部です。
 
 未完成なので、多くの機能はまだ実装されていません。
 
