@@ -9,11 +9,15 @@ import (
 
 	"github.com/labstack/echo/v5"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/nekto-sns/nekto-server/app/route"
 	"github.com/nekto-sns/nekto-server/app/handler"
 	"github.com/nekto-sns/nekto-server/app/repository"
 	"github.com/nekto-sns/nekto-server/app/service"
 
+
+	"github.com/nekto-sns/nekto-server/app/manager/sessionmanager"
 	"github.com/nekto-sns/nekto-server/app/client/scratchauth"
 
 	"github.com/nekto-sns/nekto-server/app/shared/config"
@@ -47,13 +51,23 @@ func main() {
 		os.Exit(1)
 	}
 
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+		PoolSize: 1000,
+	})
+
 	userRepo    := repository.NewUser(dbPool)
 	userSvc     := service.NewUser(userRepo)
 	userHandler := handler.NewUser(userSvc)
 
-	sa          := scratchauth.New(&http.Client{}, cfg.ScratchAuthURL, []string{cfg.LoginCallbackURL})
+	sessionRepo := repository.NewSession(rdb)
+	sessionMN   := sessionmanager.New(sessionRepo, 24 * 7 * time.Hour)
+
+	saClient    := scratchauth.New(&http.Client{}, cfg.ScratchAuthURL, []string{cfg.LoginCallbackURL})
 	authRepo    := repository.NewScratchAuth(dbPool)
-	authSvc     := service.NewScratchAuth(authRepo, sa)
+	authSvc     := service.NewScratchAuth(authRepo, saClient, sessionMN)
 	authHandler := handler.NewScratchAuth(authSvc, cfg.ScratchAuthURL, cfg.LoginCallbackURL)
 
 	e := echo.New()

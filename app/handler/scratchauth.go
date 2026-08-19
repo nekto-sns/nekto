@@ -13,7 +13,7 @@ import (
 )
 
 type scratchAuthService interface{
-	LoginCallback(context.Context, string) (string, bool, error)
+	LoginCallback(context.Context, string) (string, error)
 }
 
 type scratchAuthHandler struct{
@@ -43,7 +43,7 @@ func (h *scratchAuthHandler) LoginCallback(c *echo.Context) error {
 
 	req := c.Request().Context()
 
-	userID, isValid, err := h.svc.LoginCallback(req, privateCode)
+	session, err := h.svc.LoginCallback(req, privateCode)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "User not found").Wrap(err)
@@ -52,9 +52,14 @@ func (h *scratchAuthHandler) LoginCallback(c *echo.Context) error {
 		}
 	}
 
-	if !isValid {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-	}
+	c.SetCookie(&http.Cookie{
+		Name: "session",
+		Value: session,
+		MaxAge: 60 * 60 * 24 * 7,
+		SameSite: http.SameSiteLaxMode,
+		Secure: false,
+		HttpOnly: true,
+	})
 
-	return c.String(http.StatusOK, userID + " authorized")
+	return c.String(http.StatusOK, "success")
 }

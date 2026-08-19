@@ -39,36 +39,36 @@ func (c *client) isAllowedRedirectURL(url string) bool {
 	return false
 }
 
-func (c *client) Verify(ctx context.Context, privateCode string) (string, bool, error) {
+func (c *client) Verify(ctx context.Context, privateCode string) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", c.scratchAuthURL + "/api/auth/verifyToken?privateCode=" + privateCode, nil)
 	if err != nil {
-		return "", false, fmt.Errorf("Failed to create HTTP request (%v): %w", err, model.ErrInternal)
+		return "", fmt.Errorf("Failed to create HTTP request (%v): %w", err, model.ErrInternal)
 	}
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return "", false, fmt.Errorf("Failed to send HTTP request (%v): %w", err, model.ErrInternal)
+		return "", fmt.Errorf("Failed to send HTTP request (%v): %w", err, model.ErrInternal)
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", false, fmt.Errorf("Failed to read response body (%v): %w", err, model.ErrInternal)
+		return "", fmt.Errorf("Failed to read response body (%v): %w", err, model.ErrInternal)
 	}
 
 	var auth scratchAuth
 	err = json.Unmarshal(body, &auth)
 	if err != nil {
-		return "", false, fmt.Errorf("Failed to unmarshal JSON into a struct (%v): %w", err, model.ErrInternal)
+		return "", fmt.Errorf("Failed to unmarshal JSON into a struct (%v): %w", err, model.ErrInternal)
 	}
 
 	if auth.Valid == false {
-		return "", false, fmt.Errorf("Invalid authentication: %w", model.ErrUnauthorized)
+		return "", fmt.Errorf("Invalid authentication: %w", model.ErrUnauthorized)
 	}
 
 	if !c.isAllowedRedirectURL(auth.Redirect) {
-		return "", false, fmt.Errorf("Invalid redirect URL (%s): %w", auth.Redirect, model.ErrBadRequest)
+		return "", fmt.Errorf("Invalid redirect URL (%s): %w", auth.Redirect, model.ErrBadRequest)
 	}
 
-	return auth.Username, auth.Valid, nil
+	return auth.Username, nil
 }
