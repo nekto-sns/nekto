@@ -13,7 +13,7 @@ import (
 )
 
 type scratchAuthService interface{
-	LoginCallback(context.Context, string) (string, error)
+	LoginCallback(context.Context, string) (*model.Session, error)
 }
 
 type scratchAuthHandler struct{
@@ -54,12 +54,12 @@ func (h *scratchAuthHandler) LoginCallback(c *echo.Context) error {
 
 	c.SetCookie(&http.Cookie{
 		Name: "session",
-		Value: session,
-		MaxAge: 60 * 60 * 24 * 7,
+		Value: session.ID,
+		MaxAge: session.MaxAge,
 		SameSite: http.SameSiteLaxMode,
 		Secure: false,
 		HttpOnly: true,
 	})
 
-	return c.String(http.StatusOK, "success")
+	return c.JSON(http.StatusOK, map[string]string{"success": "true"})
 }

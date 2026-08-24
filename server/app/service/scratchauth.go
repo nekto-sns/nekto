@@ -35,27 +35,30 @@ func NewScratchAuth(saRepo scratchAuthRepository, saClient scratchAuthClient, se
 	}
 }
 
-func (s *scratchAuthService) LoginCallback(ctx context.Context, privateCode string) (string, error) {
+func (s *scratchAuthService) LoginCallback(ctx context.Context, privateCode string) (*model.Session, error) {
 	scratchName, err := s.saClient.Verify(ctx, privateCode)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return "", fmt.Errorf("Scratch account not found: %w", err)
+			return nil, fmt.Errorf("Scratch account not found: %w", err)
 		}
-		return "", fmt.Errorf("Authentication failed: %w", err)
+		return nil, fmt.Errorf("Authentication failed: %w", err)
 	}
 
 	userID, err := s.repo.UserIDByScratchName(ctx, scratchName)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
-			return "", fmt.Errorf("User not found: %w", err)
+			return nil, fmt.Errorf("User not found: %w", err)
 		}
-		return "", fmt.Errorf("Failed to get user: %w", err)
+		return nil, fmt.Errorf("Failed to get user: %w", err)
 	}
 
 	sessionID, err := s.sessionMN.Create(ctx, userID)
 	if err != nil {
-		return "", fmt.Errorf("Failed to create session: %w", err)
+		return nil, fmt.Errorf("Failed to create session: %w", err)
 	}
 
-	return sessionID, err
+	return &model.Session{
+		ID: sessionID,
+		MaxAge: s.sessionMN.MaxAge(),
+	}, nil
 }

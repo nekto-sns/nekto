@@ -18,6 +18,14 @@ type userHandler struct{
 	svc userService
 }
 
+type userResponse struct{
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	DisplayName string    `json:"display_name"`
+	Bio         string    `json:"bio"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
 func NewUser(svc userService) (*userHandler) {
 	return &userHandler{
 		svc: svc,
@@ -37,5 +45,11 @@ func (h *userHandler) ByName(c *echo.Context) error {
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user").Wrap(err)
 	}
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, &userResponse{
+		ID: user.ID,
+		Name: user.Name,
+		DisplayName: user.DisplayName,
+		Bio: user.Bio,
+		CreatedAt: user.CreatedAt,
+	})
 }
